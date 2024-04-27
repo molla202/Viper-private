@@ -217,7 +217,11 @@ Not: coin geldiyse stake edicez ağaıyı duzenlyin. domain ve cüzdan adresiniz
 ```
 viper servicers stake self cüzdan-adresi 10000000000 0001 0C00 https://domainadınız:443 testnet
 ```
-
+### Eşleştikmi ağla bakalım
+Not: port değiştirdiyseniz 26657 12657 oalcak
+```
+curl http://127.0.0.1:26657/status
+```
 ### Peer ekleme
 ```
 nano $HOME/.viper/config/configuration.json
