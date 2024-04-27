@@ -33,7 +33,15 @@ echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> $HOME/.bash_profile &
 source $HOME/.bash_profile &&
 go version
 ```
-
+### Portları açalım
+```
+sudo ufw allow ssh
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw allow 8081
+sudo ufw allow 12656
+sudo ufw allow 26656
+```
 ### Dosyaları çekelim
 ```
 wget -O /usr/local/bin/viper http://37.120.189.81/viper/viper
@@ -114,6 +122,82 @@ s%:26657%:${viper_PORT}657%g;
 s%:26660%:${viper_PORT}060%g;
 s%:26656%:${viper_PORT}656%g" $HOME/.viper/config/configuration.json
 ```
+
+### Domain işlemleri
+
+https://freedns.afraid.org/subdomain/
+
+- Adresine gidiyoruz uyelik olusturuyoruz maili onaylıyrouz ve aşılan pencerede bir domain olusturuyoruz.Destination kısmına sunucu ipsini yazıyoruz
+
+![image](https://github.com/molla202/Viper-private/assets/91562185/1636e6ad-348f-4fa1-98e3-259f60791f66)
+
+![image](https://github.com/molla202/Viper-private/assets/91562185/9888b092-3594-4a29-bf84-cae86fbd35f8)
+
+- sunucu işlemlerine geçelim
+
+HOSTNAME=buraya yukardaki resimdeki gibi aldığınız adresi yazıcaksınız.
+
+sudo certbot --nginx --domain $HOSTNAME --register-unsafely-without-email --no-redirect --agree-tos
+
+![image](https://github.com/molla202/Viper-private/assets/91562185/81cd0fc0-7ff7-4e1c-b245-5aba0c00f48b)
+```
+sudo nano /etc/nginx/sites-available/viper
+```
+Not: altaki kodu yapıstırıp ctrl x y enterla kaydedip cıkıoruz.
+```
+server {
+    add_header Access-Control-Allow-Origin "*";
+    listen 80 ;
+    listen [::]:80 ;
+    listen 8081 ssl;
+    listen [::]:8081 ssl;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name $HOSTNAME;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    listen [::]:443 ssl ipv6only=on;
+    listen 443 ssl;
+    ssl_certificate /etc/letsencrypt/live/$HOSTNAME/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/$HOSTNAME/privkey.pem;
+    include /etc/letsencrypt/options-ssl-nginx.conf;
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+    access_log /var/log/nginx/reverse-access.log;
+    error_log /var/log/nginx/reverse-error.log;
+
+    location ~* ^/v1/client/(dispatch|relay|sim|trigger) {
+        proxy_pass http://127.0.0.1:8082;
+        add_header Access-Control-Allow-Methods "POST, OPTIONS";
+        allow all;
+    }
+
+    location = /v1 {
+        add_header Access-Control-Allow-Methods "GET";
+        proxy_pass http://127.0.0.1:8082;
+        allow all;
+    }
+
+    location = /v1/query/height {
+        add_header Access-Control-Allow-Methods "GET";
+        proxy_pass http://127.0.0.1:8082;
+        allow all;
+    }
+}
+```
+sudo systemctl stop nginx
+
+sudo rm /etc/nginx/sites-enabled/default
+
+sudo ln -s /etc/nginx/sites-available/viper /etc/nginx/sites-enabled/viper
+
+sudo systemctl start nginx
+
+
+
+
 
 
 
