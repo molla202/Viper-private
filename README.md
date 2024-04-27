@@ -122,9 +122,9 @@ s%:26660%:${viper_PORT}060%g;
 s%:26656%:${viper_PORT}656%g" $HOME/.viper/config/configuration.json
 ```
 Not: düzeltme yapılcak sonra port değiştirdiyseniz
-
+```
 nano $HOME/.viper/config/configuration.json
-
+```
 ![image](https://github.com/molla202/Viper-private/assets/91562185/5a248e2e-06aa-4223-9e59-c008aeece908)
 
 ------------------------------------------------
