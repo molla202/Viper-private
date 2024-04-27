@@ -110,8 +110,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable viper.service
 sudo systemctl restart viper.service
 ```
+```
+journalctl -u viper -f
+```
+------------------------
 ### Port ayarları opsiyonel
-NOT: baska standart port proje varsa
+NOT: baska standart port proje varsa burasını yapmak şart değil. özellikle sıfır sunucuya kuruyorsanız atlayınız.
 ```
 echo "export viper_PORT="12"" >> $HOME/.bash_profile
 source $HOME/.bash_profile
@@ -122,7 +126,13 @@ s%:26657%:${viper_PORT}657%g;
 s%:26660%:${viper_PORT}060%g;
 s%:26656%:${viper_PORT}656%g" $HOME/.viper/config/configuration.json
 ```
+Not: düzeltme yapılcak sonra port değiştirdiyseniz
 
+nano $HOME/.viper/config/configuration.json
+
+![image](https://github.com/molla202/Viper-private/assets/91562185/5a248e2e-06aa-4223-9e59-c008aeece908)
+
+------------------------------------------------
 ### Domain işlemleri
 
 https://freedns.afraid.org/subdomain/
@@ -135,6 +145,10 @@ https://freedns.afraid.org/subdomain/
 
 - sunucu işlemlerine geçelim
 
+```
+echo "export HOSTNAME="viper-molla202.strangled.net"" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+```
 HOSTNAME=buraya yukardaki resimdeki gibi aldığınız adresi yazıcaksınız.
 
 sudo certbot --nginx --domain $HOSTNAME --register-unsafely-without-email --no-redirect --agree-tos
@@ -187,16 +201,27 @@ server {
     }
 }
 ```
+### Ngnix başlatalım
+```
 sudo systemctl stop nginx
-
+```
+```
 sudo rm /etc/nginx/sites-enabled/default
-
+```
+```
 sudo ln -s /etc/nginx/sites-available/viper /etc/nginx/sites-enabled/viper
-
+```
+```
 sudo systemctl start nginx
-
-
-
+```
+### Bakiye kontrol
+```
+sudo viper wallet query account-balance cüzdan-adresinizi-yazınız
+```
+Not: coin geldiyse stake edicez ağaıyı duzenlyin. domain ve cüzdan adresinizi yazınız
+```
+viper servicers stake self cüzdan-adresi 10000000000 0001 0C00 https://domainadınız:443 testnet
+```
 
 
 
